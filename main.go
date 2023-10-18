@@ -243,7 +243,20 @@ func Sub(a, b *MyBigInt) (*MyBigInt, error) {
 	return res.trunc(), nil
 }
 
+func Mod(a *MyBigInt, b uint64) uint64 {
+	blockMod := ((math.MaxUint64 % b) + 1) % b
+	res := uint64(0)
+	for i := a.blockCount - 1; i >= 0; i-- {
+		res *= blockMod
+		res %= b
+		res += a.value[i] % b
+		res %= b
+	}
+	return res
+}
+
 func main() {
+
 	a := &MyBigInt{}
 	a.SetHex("51bf608414ad5726a3c1bec098f77b1b54ffb2787f8d528a74c1d7fde6470ea4")
 	fmt.Println("A:\n" + a.GetHex())
@@ -317,4 +330,7 @@ func main() {
 	fmt.Println("A >> 80:\n" + ShiftR(a, 80).String())
 	fmt.Println("A << 36:\n" + ShiftL(a, 36).String())
 
+	a.SetHex("10e570324e6ffdbc6b9c813dec968d9bad134bc0dbb061530934f4e59c2700b9")
+	d := uint64(432)
+	fmt.Printf("%v mod %v = %v", a.String(), d, Mod(a, d)) //divisor and answer are decimal!
 }
